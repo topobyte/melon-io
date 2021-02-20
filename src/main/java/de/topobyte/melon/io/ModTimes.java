@@ -30,7 +30,8 @@ public class ModTimes
 	 * build systems where an artifact depends on a number of other files and
 	 * needs to be recreated only if any of the other files has been modified
 	 * after the artifact itself. This method can be used to check if an
-	 * artifact is up to date.
+	 * artifact is up to date. Comparison is not strict, i.e. 'after' has the
+	 * meaning of >=, not > in this context.
 	 */
 	public static boolean isNewerThan(Path file, Path... others)
 			throws IOException
