@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
+import java.util.Collection;
 
 public class ModTimes
 {
@@ -34,6 +35,48 @@ public class ModTimes
 	 * meaning of >=, not > in this context.
 	 */
 	public static boolean isNewerThan(Path file, Path... others)
+			throws IOException
+	{
+		if (!Files.exists(file)) {
+			return false;
+		}
+		FileTime mod = Files.getLastModifiedTime(file);
+		for (Path other : others) {
+			FileTime otherMod = Files.getLastModifiedTime(other);
+			if (otherMod.compareTo(mod) > 0) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Test if 'file' has been modified after all of 'others'. Typically used in
+	 * build systems where an artifact depends on a number of other files and
+	 * needs to be recreated only if any of the other files has been modified
+	 * after the artifact itself. This method can be used to check if an
+	 * artifact is up to date. Comparison is not strict, i.e. 'after' has the
+	 * meaning of >=, not > in this context.
+	 */
+	public static boolean isNewerThan(Path file, Collection<Path> others)
+			throws IOException
+	{
+		return isNewerThanIterable(file, others);
+	}
+
+	/**
+	 * Test if 'file' has been modified after all of 'others'. Typically used in
+	 * build systems where an artifact depends on a number of other files and
+	 * needs to be recreated only if any of the other files has been modified
+	 * after the artifact itself. This method can be used to check if an
+	 * artifact is up to date. Comparison is not strict, i.e. 'after' has the
+	 * meaning of >=, not > in this context.
+	 * 
+	 * Take special care when using this method because Path itself implements
+	 * {@code Iterable<Path>}. Passing a Path as that argument likely has
+	 * unexpected results.
+	 */
+	public static boolean isNewerThanIterable(Path file, Iterable<Path> others)
 			throws IOException
 	{
 		if (!Files.exists(file)) {

@@ -25,6 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
@@ -105,6 +106,34 @@ public class TestModTimes
 	public void testException() throws IOException
 	{
 		ModTimes.isNewerThan(file2, file5);
+	}
+
+	@Test
+	public void testCollection() throws IOException
+	{
+		// comparison is not strict!
+		assertTrue(ModTimes.isNewerThan(file2, Arrays.asList(file1)));
+		assertTrue(ModTimes.isNewerThan(file1, Arrays.asList(file2)));
+
+		assertFalse(ModTimes.isNewerThan(file2, Arrays.asList(file3)));
+
+		assertTrue(ModTimes.isNewerThan(file4, Arrays.asList(file2, file3)));
+		assertFalse(ModTimes.isNewerThan(file2, Arrays.asList(file3, file4)));
+	}
+
+	@Test
+	public void testIterable() throws IOException
+	{
+		// comparison is not strict!
+		assertTrue(ModTimes.isNewerThanIterable(file2, Arrays.asList(file1)));
+		assertTrue(ModTimes.isNewerThanIterable(file1, Arrays.asList(file2)));
+
+		assertFalse(ModTimes.isNewerThanIterable(file2, Arrays.asList(file3)));
+
+		assertTrue(ModTimes.isNewerThanIterable(file4,
+				Arrays.asList(file2, file3)));
+		assertFalse(ModTimes.isNewerThanIterable(file2,
+				Arrays.asList(file3, file4)));
 	}
 
 }
